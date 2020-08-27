@@ -35,11 +35,25 @@ mod tests {
 
         mod new {
             use super::*;
+            use rstest::rstest;
+
             #[test]
             fn set_score_to_zero() {
                 let result = Game::new(2);
 
                 assert_eq!(result.score, 0)
+            }
+
+            #[rstest(input, case(2), case(4), case(5))]
+            fn set_tiles_to_grid_of_given_size(input: u8) {
+                let result = Game::new(input);
+
+                let expected_length: usize = input.into();
+                assert_eq!(result.tiles.len(), expected_length);
+
+                for row in result.tiles.iter() {
+                    assert_eq!(row.len(), expected_length);
+                }
             }
         }
     }
