@@ -23,4 +23,4 @@
 ## Features
 
 ### Colour output
-Leave colours until after v1 there's a crate called "colored".
+Leave colours until after v1 there's a crate called [colored](https://crates.io/crates/colored).
