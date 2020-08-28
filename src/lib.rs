@@ -5,8 +5,7 @@ pub enum MoveDirection {
     Right,
 }
 
-#[derive(Clone)]
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Tile {
     pub value: u16,
 }
@@ -35,7 +34,6 @@ impl Game {
 mod tests {
     use super::*;
 
-    #[cfg(test)]
     mod game {
         use super::*;
 
