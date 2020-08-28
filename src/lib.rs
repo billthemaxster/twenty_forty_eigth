@@ -6,6 +6,12 @@ pub enum MoveDirection {
 }
 
 #[derive(Clone, Debug)]
+pub struct GridCoord {
+    pub x: u8,
+    pub y: u8,
+}
+
+#[derive(Clone, Debug)]
 pub struct Tile {
     pub value: u16,
 }
@@ -28,8 +34,17 @@ impl Grid {
         Ok(Grid { size, data })
     }
 
-    pub fn add_new_tile(value: u16) -> Result<(), &'static str> {
-        Err("not implemented")
+    pub fn add_new_tile(&mut self, value: u16, position: GridCoord) -> Result<(), &'static str> {
+        let x: usize = position.x.into();
+        let y: usize = position.y.into();
+
+        if let Some(_tile) = &self.data[x][y] {
+            return Err("cannot add a new tile where a tile already exists");
+        }
+
+        self.data[x][y] = Some(Tile { value });
+
+        Ok(())
     }
 }
 
@@ -119,6 +134,42 @@ mod tests {
                 for row in result.data.iter() {
                     assert_eq!(row.len(), expected_length);
                 }
+            }
+        }
+
+        mod add_new_tile {
+            use super::*;
+
+            #[test]
+            fn adds_a_tile_of_given_value_to_the_given_position() {
+                let mut grid = Grid::new(2).unwrap();
+
+                let expected_value: u16 = 2;
+                let x = 0;
+                let y = 0;
+                grid.add_new_tile(expected_value, GridCoord { x, y })
+                    .unwrap();
+
+                let x: usize = x.into();
+                let y: usize = y.into();
+                let result = &grid.data[x][y];
+                match result {
+                    None => assert!(false),
+                    Some(tile) => assert_eq!(tile.value, expected_value),
+                };
+            }
+
+            #[test]
+            fn does_not_add_a_tile_if_one_is_present_in_given_location() {
+                let mut grid = Grid::new(2).unwrap();
+
+                grid.data[0][0] = Some(Tile { value: 16 });
+                let result = grid.add_new_tile(2, GridCoord { x: 0, y: 0 });
+
+                assert_eq!(
+                    result.unwrap_err(),
+                    "cannot add a new tile where a tile already exists"
+                );
             }
         }
     }
