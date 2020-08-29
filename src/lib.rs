@@ -1,3 +1,5 @@
+use rand::prelude::*;
+
 pub enum MoveDirection {
     Up,
     Down,
@@ -5,7 +7,7 @@ pub enum MoveDirection {
     Right,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Copy, Debug)]
 pub struct GridCoord {
     pub x: u8,
     pub y: u8,
@@ -57,6 +59,21 @@ impl Grid {
 
         Ok(self.data[x][y].as_ref())
     }
+
+    pub fn get_empty_positions(&self) -> Result<Vec<GridCoord>, &'static str> {
+        let mut tiles: Vec<GridCoord> = vec![];
+        for x in 0..self.size {
+            for y in 0..self.size {
+                let tile_square = self.get_tile(GridCoord { x, y })?;
+
+                if tile_square.is_none() {
+                    tiles.push(GridCoord { x, y });
+                }
+            }
+        }
+
+        Ok(tiles)
+    }
 }
 
 #[derive(Debug)]
@@ -70,7 +87,47 @@ impl Game {
         let score = 0;
         let grid: Grid = Grid::new(size)?;
 
-        Ok(Game { score, grid })
+        let mut game = Game { score, grid };
+
+        // start with two tiles
+        game.add_random_tile()?;
+        game.add_random_tile()?;
+
+        Ok(game)
+    }
+
+    pub fn add_random_tile(&mut self) -> Result<(), &'static str> {
+        let tile_value = Game::generate_tile_value();
+        let tile_position = self.generate_random_empty_position()?;
+
+        self.grid.add_new_tile(tile_value, tile_position)?;
+
+        Ok(())
+    }
+
+    fn generate_random_empty_position(&self) -> Result<GridCoord, &'static str> {
+        let empty_tiles = self.grid.get_empty_positions()?;
+
+        if empty_tiles.len() == 0 {
+            return Err("No empty positions remain.");
+        }
+
+        let mut rng = thread_rng();
+        let index = rng.gen_range(0, empty_tiles.len());
+
+        Ok(empty_tiles[index])
+    }
+
+    fn generate_tile_value() -> u16 {
+        let mut rng = thread_rng();
+
+        let seed = rng.gen_range(0, 2);
+
+        match seed {
+            0 => 2,
+            1 => 4,
+            _ => panic!("Should not be possible"),
+        }
     }
 }
 
