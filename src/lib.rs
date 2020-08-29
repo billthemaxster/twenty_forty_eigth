@@ -38,13 +38,24 @@ impl Grid {
         let x: usize = position.x.into();
         let y: usize = position.y.into();
 
-        if let Some(_tile) = &self.data[x][y] {
+        if let Some(_tile) = &self.get_tile(position)? {
             return Err("cannot add a new tile where a tile already exists");
         }
 
         self.data[x][y] = Some(Tile { value });
 
         Ok(())
+    }
+
+    pub fn get_tile(&self, position: GridCoord) -> Result<Option<&Tile>, &'static str> {
+        if self.size < position.x || self.size < position.y {
+            return Err("can't access a position greater than grid size");
+        }
+
+        let x: usize = position.x.into();
+        let y: usize = position.y.into();
+
+        Ok(self.data[x][y].as_ref())
     }
 }
 
@@ -169,6 +180,40 @@ mod tests {
                 assert_eq!(
                     result.unwrap_err(),
                     "cannot add a new tile where a tile already exists"
+                );
+            }
+        }
+
+        mod get_tile {
+            use super::*;
+            use rstest::rstest;
+
+            #[test]
+            fn returns_tile_for_valid_location() {
+                let mut grid = Grid::new(2).unwrap();
+                let expected_value = 16;
+                let expected_tile = Some(Tile {
+                    value: expected_value,
+                });
+                grid.data[0][0] = expected_tile;
+
+                let result = grid.get_tile(GridCoord { x: 0, y: 0 }).unwrap();
+
+                match result {
+                    Some(tile) => assert_eq!(expected_value, tile.value),
+                    None => assert!(false),
+                };
+            }
+
+            #[rstest(x, y, size, case(0, 3, 2), case(3, 0, 2))]
+            fn errors_if_position_outside_of_grid(x: u8, y: u8, size: u8) {
+                let grid = Grid::new(size).unwrap();
+
+                let result = grid.get_tile(GridCoord { x, y });
+
+                assert_eq!(
+                    result.unwrap_err(),
+                    "can't access a position greater than grid size"
                 );
             }
         }
