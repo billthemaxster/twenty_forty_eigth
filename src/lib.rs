@@ -274,5 +274,51 @@ mod tests {
                 );
             }
         }
+
+        mod get_empty_positions {
+            use super::*;
+            use rstest::rstest;
+
+            #[rstest(size, case(2), case(4), case(5))]
+            fn return_all_squares_when_grid_is_empty(size: u8) {
+                let grid = Grid::new(size).unwrap();
+
+                let empty_positions = grid.get_empty_positions().unwrap();
+
+                let expected_size: usize = (size * size).into();
+
+                assert_eq!(empty_positions.len(), expected_size);
+            }
+
+            #[rstest(
+                size,
+                populated_squares,
+                case(2, 2),
+                case(2, 4),
+                case(3, 2),
+                case(3, 4),
+                case(5, 5),
+                case(5, 20)
+            )]
+            fn return_correct_number_of_squares_when_given_number_are_populated(
+                size: u8,
+                populated_squares: u8,
+            ) {
+                let mut grid = Grid::new(size).unwrap();
+
+                for i in 0..populated_squares {
+                    let position = GridCoord {
+                        x: i / size,
+                        y: i % size,
+                    };
+                    grid.add_new_tile(2, position);
+                }
+
+                let expected_squares_count: usize = (size * size - populated_squares).into();
+
+                let empty_positions = grid.get_empty_positions().unwrap();
+                assert_eq!(empty_positions.len(), expected_squares_count);
+            }
+        }
     }
 }
