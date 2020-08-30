@@ -103,5 +103,27 @@ mod test {
                 "cannot create a game with a grid smaller than 2x2."
             );
         }
+
+        #[test]
+        fn game_created_with_two_initial_tiles() {
+            let game = Game::new(2).unwrap();
+
+            let empty_positions = game.grid.get_empty_positions();
+
+            assert_eq!(empty_positions.len(), 2);
+        }
+
+        #[test]
+        fn game_created_with_two_tiles_that_are_of_initial_value() {
+            let game = Game::new(2).unwrap();
+
+            for x in 0..game.grid.get_size() {
+                for y in 0..game.grid.get_size() {
+                    if let Some(tile) = game.grid.get_tile(GridCoord { x, y }).unwrap() {
+                        assert!(tile.value == 2 || tile.value == 4);
+                    };
+                }
+            }
+        }
     }
 }
