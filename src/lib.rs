@@ -326,6 +326,34 @@ mod tests {
                 assert_eq!(empty_positions.len(), expected_squares_count);
             }
 
+            #[rstest(
+                square0, 
+                square1,
+                case(GridCoord{x:0, y:0}, GridCoord{x:0, y:1}),
+                case(GridCoord{x:0, y:0}, GridCoord{x:1, y:0}),
+                case(GridCoord{x:0, y:0}, GridCoord{x:1, y:1}),
+                case(GridCoord{x:0, y:1}, GridCoord{x:1, y:0}),
+                case(GridCoord{x:0, y:1}, GridCoord{x:1, y:1}),
+                case(GridCoord{x:1, y:0}, GridCoord{x:1, y:1})
+            )]
+            fn returns_correct_squares(square0: GridCoord, square1: GridCoord) {
+                let mut grid = Grid::new(2).unwrap();
+
+                let _ = grid.add_new_tile(2, square0).unwrap();
+                let _ = grid.add_new_tile(2, square1).unwrap();
+
+                let a = grid.get_empty_positions();
+
+                assert_eq!(a.len(), 2);
+
+                let square2 = a[0];
+                assert!(!square2.is_equal(&square0));
+                assert!(!square2.is_equal(&square1));
+
+                let square3 = a[1];
+                assert!(!square3.is_equal(&square0));
+                assert!(!square3.is_equal(&square1));
+            }
         }
     }
 
