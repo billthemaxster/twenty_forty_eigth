@@ -60,11 +60,11 @@ impl Grid {
         Ok(self.data[x][y].as_ref())
     }
 
-    pub fn get_empty_positions(&self) -> Result<Vec<GridCoord>, &'static str> {
+    pub fn get_empty_positions(&self) -> Vec<GridCoord> {
         let mut tiles: Vec<GridCoord> = vec![];
         for x in 0..self.size {
             for y in 0..self.size {
-                let tile_square = self.get_tile(GridCoord { x, y })?;
+                let tile_square = self.get_tile(GridCoord { x, y }).unwrap();
 
                 if tile_square.is_none() {
                     tiles.push(GridCoord { x, y });
@@ -72,7 +72,7 @@ impl Grid {
             }
         }
 
-        Ok(tiles)
+        tiles
     }
 }
 
@@ -106,7 +106,7 @@ impl Game {
     }
 
     fn generate_random_empty_position(&self) -> Result<GridCoord, &'static str> {
-        let empty_tiles = self.grid.get_empty_positions()?;
+        let empty_tiles = self.grid.get_empty_positions();
 
         if empty_tiles.len() == 0 {
             return Err("No empty positions remain.");
@@ -283,7 +283,7 @@ mod tests {
             fn return_all_squares_when_grid_is_empty(size: u8) {
                 let grid = Grid::new(size).unwrap();
 
-                let empty_positions = grid.get_empty_positions().unwrap();
+                let empty_positions = grid.get_empty_positions();
 
                 let expected_size: usize = (size * size).into();
 
@@ -311,12 +311,12 @@ mod tests {
                         x: i / size,
                         y: i % size,
                     };
-                    grid.add_new_tile(2, position);
+                    let _ = grid.add_new_tile(2, position).unwrap();
                 }
 
                 let expected_squares_count: usize = (size * size - populated_squares).into();
 
-                let empty_positions = grid.get_empty_positions().unwrap();
+                let empty_positions = grid.get_empty_positions();
                 assert_eq!(empty_positions.len(), expected_squares_count);
             }
         }
