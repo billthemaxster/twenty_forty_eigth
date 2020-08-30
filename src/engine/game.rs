@@ -1,4 +1,4 @@
-use crate::engine::grid::Grid;
+use crate::engine::grid::*;
 use crate::engine::grid_coord::GridCoord;
 use rand::prelude::*;
 
@@ -62,6 +62,30 @@ impl Game {
             1 => 4,
             _ => panic!("Should not be possible"),
         }
+    }
+
+    pub fn perform_move(&self, direction: MoveDirection) -> Result<(), &'static str> {
+        // combine tiles in the given direction
+        match direction {
+            MoveDirection::Down => self.perform_move_down(),
+            _ => (),
+        }
+
+        // if any tiles have combined, update the score
+
+        // if there's been any movement, add a new random tile
+
+        Ok(())
+    }
+
+    fn perform_move_down(&self) -> Result<Vec<Tile>, &'static str> {
+        // for each column
+
+        // go from the bottom to the top, work out
+        // is there a gap and is there something above it
+        // need to handle moving something all the way down as far it can go
+        // then combine anything that can be combined.
+        Ok(())
     }
 }
 
