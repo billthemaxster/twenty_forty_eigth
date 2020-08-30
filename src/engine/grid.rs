@@ -8,7 +8,7 @@ pub struct Tile {
 #[derive(Debug)]
 pub struct Grid {
     data: Vec<Vec<Option<Tile>>>,
-    pub size: u8,
+    size: u8,
 }
 
 impl Grid {
@@ -64,6 +64,10 @@ impl Grid {
         }
 
         tiles
+    }
+
+    pub fn get_size(&self) -> u8{
+        self.size
     }
 }
 

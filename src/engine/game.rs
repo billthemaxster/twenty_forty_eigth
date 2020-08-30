@@ -1,11 +1,11 @@
-use crate::engine::grid_coord::GridCoord;
 use crate::engine::grid::Grid;
+use crate::engine::grid_coord::GridCoord;
 use rand::prelude::*;
 
 #[derive(Debug)]
 pub struct Game {
-    pub score: u32,
-    pub grid: Grid,
+    score: u32,
+    grid: Grid,
 }
 
 impl Game {
@@ -22,7 +22,15 @@ impl Game {
         Ok(game)
     }
 
-    pub fn add_random_tile(&mut self) -> Result<(), &'static str> {
+    pub fn get_score(&self) -> u32 {
+        self.score
+    }
+
+    pub fn get_grid(&self) -> &Grid {
+        &self.grid
+    }
+
+    fn add_random_tile(&mut self) -> Result<(), &'static str> {
         let tile_value = Game::generate_tile_value();
         let tile_position = self.generate_random_empty_position()?;
 
@@ -83,7 +91,7 @@ mod test {
         fn set_tiles_to_grid_of_given_size(input: u8) {
             let result = Game::new(input).unwrap();
 
-            assert_eq!(result.grid.size, input);
+            assert_eq!(result.grid.get_size(), input);
         }
 
         #[rstest(input, case(0), case(1))]
