@@ -104,8 +104,8 @@ mod test {
             let expected_length: usize = expected_size.into();
             assert_eq!(result.data.len(), expected_length);
 
-            for row in result.data.iter() {
-                assert_eq!(row.len(), expected_length);
+            for column in result.data.iter() {
+                assert_eq!(column.len(), expected_length);
             }
         }
     }
