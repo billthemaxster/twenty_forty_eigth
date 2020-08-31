@@ -81,27 +81,38 @@ impl Game {
     fn perform_move_down(&mut self) -> Result<Vec<Tile>, &'static str> {
         // for each column
         for y in 0..self.grid.get_size() {
-            // Move everything as far down as it can go
-            let mut lowest_empty_space: Option<GridCoord> = None;
-            for x in 0..self.grid.get_size() {
-                let current_position = GridCoord { x, y };
-                let tile = self.grid.get_tile(current_position).unwrap();
-                match tile {
-                    None => lowest_empty_space = Some(current_position),
-                    Some(_tile_to_move) => {
-                        if let Some(new_position) = lowest_empty_space {
-                            self.grid.move_tile(current_position, new_position)?;
-                        }
+            loop { // do-while
+                let shunt_performed = self.perform_shunt_down(y)?;
+                if !shunt_performed {
+                    break;
+                }
+            }
+            
+            // need to handle moving something all the way down as far it can go
+            // then combine anything that can be combined.
+        }
+        
+        Ok(vec![])
+    }
+
+    fn perform_shunt_down(&mut self, column_index: u8) -> Result<bool, &'static str> {
+        // Move everything as far down as it can go
+        let mut lowest_empty_space: Option<GridCoord> = None;
+        for x in 0..self.grid.get_size() {
+            let current_position = GridCoord { x, y: column_index };
+            let tile = self.grid.get_tile(current_position).unwrap();
+            match tile {
+                None => lowest_empty_space = Some(current_position),
+                Some(_tile_to_move) => {
+                    if let Some(new_position) = lowest_empty_space {
+                        self.grid.move_tile(current_position, new_position)?;
+                        return Ok(true);
                     }
                 }
             }
         }
 
-        // go from the bottom to the top, work out
-        // is there a gap and is there something above it
-        // need to handle moving something all the way down as far it can go
-        // then combine anything that can be combined.
-        Ok(vec![])
+        Ok(false)
     }
 }
 
