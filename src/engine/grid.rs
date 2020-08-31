@@ -28,14 +28,12 @@ impl Grid {
         value: u16,
         position: GridCoord,
     ) -> Result<(), &'static str> {
-        let x: usize = position.x.into();
-        let y: usize = position.y.into();
 
         if let Some(_tile) = &self.get_tile(position)? {
             return Err("cannot add a new tile where a tile already exists");
         }
 
-        self.data[x][y] = Some(Tile { value });
+        self.data[position.x()][position.y()] = Some(Tile { value });
 
         Ok(())
     }
@@ -45,10 +43,7 @@ impl Grid {
             return Err("can't access a position greater than grid size");
         }
 
-        let x: usize = position.x.into();
-        let y: usize = position.y.into();
-
-        Ok(self.data[x][y].as_ref())
+        Ok(self.data[position.x()][position.y()].as_ref())
     }
 
     pub fn get_empty_positions(&self) -> Vec<GridCoord> {
@@ -118,9 +113,7 @@ mod test {
             let mut grid = Grid::new(2).unwrap();
 
             let expected_value: u16 = 2;
-            let x = 0;
-            let y = 0;
-            grid.add_new_tile(expected_value, GridCoord { x, y })
+            let position = GridCoord { x:0, y: 0 };
                 .unwrap();
 
             let x: usize = x.into();

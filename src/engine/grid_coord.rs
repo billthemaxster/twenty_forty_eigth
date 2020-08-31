@@ -8,6 +8,14 @@ impl GridCoord {
     pub fn is_equal(&self, other: &GridCoord) -> bool {
         self.x == other.x && self.y == other.y
     }
+
+    pub fn x(&self) -> usize {
+        self.x.into()
+    }
+
+    pub fn y(&self) -> usize {
+        self.y.into()
+    }
 }
 
 #[cfg(test)]
