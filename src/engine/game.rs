@@ -64,12 +64,12 @@ impl Game {
         }
     }
 
-    pub fn perform_move(&self, direction: MoveDirection) -> Result<(), &'static str> {
+    pub fn perform_move(&mut self, direction: MoveDirection) -> Result<(), &'static str> {
         // combine tiles in the given direction
         match direction {
             MoveDirection::Down => self.perform_move_down(),
-            _ => (),
-        }
+            _ => panic!(),
+        };
 
         // if any tiles have combined, update the score
 
@@ -78,14 +78,30 @@ impl Game {
         Ok(())
     }
 
-    fn perform_move_down(&self) -> Result<Vec<Tile>, &'static str> {
+    fn perform_move_down(&mut self) -> Result<Vec<Tile>, &'static str> {
         // for each column
+        for y in 0..self.grid.get_size() {
+            // Move everything as far down as it can go
+            let mut lowest_empty_space: Option<GridCoord> = None;
+            for x in 0..self.grid.get_size() {
+                let current_position = GridCoord { x, y };
+                let tile = self.grid.get_tile(current_position).unwrap();
+                match tile {
+                    None => lowest_empty_space = Some(current_position),
+                    Some(_tile_to_move) => {
+                        if let Some(new_position) = lowest_empty_space {
+                            self.grid.move_tile(current_position, new_position)?;
+                        }
+                    }
+                }
+            }
+        }
 
         // go from the bottom to the top, work out
         // is there a gap and is there something above it
         // need to handle moving something all the way down as far it can go
         // then combine anything that can be combined.
-        Ok(())
+        Ok(vec![])
     }
 }
 

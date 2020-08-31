@@ -1,6 +1,6 @@
 use crate::engine::grid_coord::GridCoord;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Copy)]
 pub struct Tile {
     pub value: u16,
 }
@@ -44,6 +44,26 @@ impl Grid {
         }
 
         Ok(self.data[position.x()][position.y()].as_ref())
+    }
+    
+    pub fn move_tile(&mut self, current_position: GridCoord, new_position: GridCoord) -> Result<(), &'static str> {
+        let current_slot = self.get_tile(current_position)?;
+        let new_slot = self.get_tile(new_position)?;
+
+        return match current_slot {
+            None => Err("Cannot move a tile where there is none."),
+            Some(_tile_to_move) => {
+                return match new_slot {
+                    Some(_tile_already_there) => Err("Cannot move a tile into an already occupied position."),
+                    None => {
+                        self.data[new_position.x()][new_position.y()] = self.data[current_position.x()][current_position.y()];
+                        self.data[current_position.x()][current_position.y()] = None;
+                        
+                        return Ok(());
+                    }
+                };
+            }
+        };
     }
 
     pub fn get_empty_positions(&self) -> Vec<GridCoord> {
@@ -114,11 +134,10 @@ mod test {
 
             let expected_value: u16 = 2;
             let position = GridCoord { x:0, y: 0 };
+            grid.add_new_tile(expected_value, position)
                 .unwrap();
 
-            let x: usize = x.into();
-            let y: usize = y.into();
-            let result = &grid.data[x][y];
+            let result = &grid.data[position.x()][position.y()];
             match result {
                 None => assert!(false),
                 Some(tile) => assert_eq!(tile.value, expected_value),
